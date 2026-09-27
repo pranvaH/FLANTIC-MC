@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flantic MC — Store</title>
+<style>
+:root{--bg:#050a14;--navy:#0d1b33;--panel:rgba(16,28,50,.55);--border:rgba(90,160,255,.25);
+--blue:#3b82f6;--cyan:#22d3ee;--ice:#7dd3fc;--text:#e8f1ff;--muted:#93a5c4;--glow:0 0 24px rgba(56,189,248,.25);--ok:#22c55e;--warn:#facc15;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,Segoe UI,Roboto,sans-serif;overflow-x:hidden;}
+a{color:inherit;text-decoration:none;} button{font-family:inherit;cursor:pointer;}
+#particles{position:fixed;inset:0;z-index:-1;background:radial-gradient(circle at 20% 15%,rgba(59,130,246,.14),transparent 45%),radial-gradient(circle at 85% 75%,rgba(34,211,238,.12),transparent 45%),var(--bg);}
+.dot{position:fixed;border-radius:50%;background:var(--cyan);opacity:.35;pointer-events:none;animation:float 12s linear infinite;}
+@keyframes float{from{transform:translateY(0)}to{transform:translateY(-110vh)}}
+.container{max-width:1100px;margin:0 auto;padding:0 20px;}
+nav{position:sticky;top:0;z-index:50;background:rgba(6,12,24,.75);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);}
+.navwrap{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;max-width:1100px;margin:0 auto;}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;}
+.brand .mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(145deg,var(--blue),var(--cyan));display:flex;align-items:center;justify-content:center;box-shadow:var(--glow);}
+.navlinks{display:flex;gap:20px;font-size:.85rem;font-weight:600;color:var(--muted);}
+.navlinks a:hover,.navlinks a.active{color:var(--ice);}
+.navright{display:flex;align-items:center;gap:12px;}
+.carticon{position:relative;font-size:1.2rem;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:8px 11px;}
+.badge{position:absolute;top:-7px;right:-7px;background:var(--cyan);color:#04101f;font-size:.65rem;font-weight:800;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;}
+.badge.pulse{animation:pulse .4s ease;} @keyframes pulse{50%{transform:scale(1.4)}}
+.hamburger{display:none;background:none;border:none;color:var(--text);font-size:1.4rem;}
+.mobilemenu{display:none;flex-direction:column;padding:10px 20px 16px;border-top:1px solid var(--border);}
+.mobilemenu a{padding:10px 0;color:var(--muted);font-weight:600;}
+@media(max-width:760px){.navlinks{display:none}.hamburger{display:block}.mobilemenu.open{display:flex}}
+section{padding:60px 0;} .reveal{opacity:0;transform:translateY(18px);transition:.6s;}.reveal.show{opacity:1;transform:none;}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}.reveal{opacity:1!important;transform:none!important;}}
+.hero{text-align:center;padding:80px 20px 50px;}
+.hero h1{font-size:clamp(2.2rem,6vw,3.6rem);font-weight:900;background:linear-gradient(135deg,#fff,var(--ice) 60%,var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.hero p.sub{margin-top:12px;color:var(--ice);font-weight:600;}
+.statusrow{display:flex;gap:16px;justify-content:center;margin-top:14px;flex-wrap:wrap;font-size:.85rem;color:var(--muted);}
+.statusrow .dotlive{width:8px;height:8px;border-radius:50%;background:var(--ok);display:inline-block;margin-right:6px;box-shadow:0 0 8px var(--ok);}
+.herobtns{display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap;}
+.btn{padding:12px 24px;border-radius:11px;font-weight:700;font-size:.85rem;border:1px solid var(--border);transition:.15s;}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:linear-gradient(135deg,var(--blue),var(--cyan));color:#04101f;border:none;box-shadow:var(--glow);}
+.btn-primary:hover{transform:translateY(-2px);}
+.btn-ghost{background:var(--panel);color:var(--text);}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--ice);}
+.ipcard{max-width:420px;margin:26px auto 0;padding:20px;text-align:center;}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:16px;backdrop-filter:blur(10px);box-shadow:0 8px 30px rgba(0,0,0,.35);transition:.25s;}
+.card:hover{transform:translateY(-5px);border-color:var(--cyan);}
+.ipval{font-size:1.15rem;font-weight:800;color:var(--ice);margin:4px 0 12px;word-break:break-all;}
+.searchbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:30px;}
+.searchbar input{flex:1;min-width:200px;max-width:320px;padding:11px 15px;background:var(--navy);border:1px solid var(--border);border-radius:10px;color:var(--text);}
+.filterbtn{padding:9px 16px;border-radius:9px;border:1px solid var(--border);background:var(--panel);color:var(--muted);font-size:.8rem;font-weight:700;}
+.filterbtn.active{background:linear-gradient(135deg,var(--blue),var(--cyan));color:#04101f;border:none;}
+.sectitle{text-align:center;margin-bottom:30px;}
+.sectitle h2{font-size:clamp(1.5rem,4vw,2rem);font-weight:900;}
+.grid{display:grid;gap:18px;grid-template-columns:repeat(4,1fr);}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:560px){.grid{grid-template-columns:1fr;}}
+.prod{padding:20px;display:flex;flex-direction:column;gap:8px;}
+.prod .ic{font-size:1.8rem;} .prod h3{font-weight:800;color:var(--ice);} .prod p.desc{font-size:.8rem;color:var(--muted);}
+.prod .price{font-weight:800;font-size:1.05rem;margin-top:4px;}
+.hide{display:none!important;}
+.ctabox{text-align:center;padding:50px 20px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:linear-gradient(180deg,transparent,rgba(59,130,246,.08));}
+.drawer{position:fixed;top:0;right:0;height:100%;width:380px;max-width:92vw;background:var(--navy);border-left:1px solid var(--border);
+transform:translateX(100%);transition:transform .3s ease;z-index:90;display:flex;flex-direction:column;box-shadow:-10px 0 40px rgba(0,0,0,.5);}
+.drawer.open{transform:translateX(0);}
+.drawerhead{display:flex;justify-content:space-between;align-items:center;padding:18px;border-bottom:1px solid var(--border);}
+.drawerhead button{background:none;border:none;color:var(--text);font-size:1.3rem;}
+.drawerbody{flex:1;overflow-y:auto;padding:16px;}
+.cartitem{display:flex;gap:10px;align-items:center;padding:12px;margin-bottom:10px;background:var(--panel);border:1px solid var(--border);border-radius:12px;}
+.cartitem .info{flex:1;min-width:0;} .cartitem h4{font-size:.85rem;} .cartitem span{font-size:.72rem;color:var(--muted);}
+.qtybox{display:flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:2px 6px;}
+.qtybox button{background:none;border:none;color:var(--ice);font-size:.95rem;width:20px;}
+.removebtn{background:none;border:none;color:#f87171;font-size:1rem;}
+.drawerfoot{padding:16px;border-top:1px solid var(--border);}
+.drawerfoot .row{display:flex;justify-content:space-between;font-size:.85rem;color:var(--muted);padding:4px 0;}
+.drawerfoot .row.total{color:var(--text);font-weight:800;font-size:1.05rem;}
+.emptycart{text-align:center;padding:40px 10px;color:var(--muted);}
+.overlaybg{position:fixed;inset:0;background:rgba(3,7,15,.6);z-index:80;display:none;}
+.overlaybg.open{display:block;}
+.modal{position:fixed;inset:0;z-index:110;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(3,7,15,.7);backdrop-filter:blur(3px);}
+.modal.open{display:flex;}
+.modalcard{background:var(--navy);border:1px solid var(--border);border-radius:16px;padding:26px;max-width:460px;width:100%;max-height:88vh;overflow-y:auto;animation:pop .25s ease;}
+@keyframes pop{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+.field{margin-bottom:14px;text-align:left;}
+.field label{display:block;font-size:.75rem;color:var(--muted);margin-bottom:5px;font-weight:600;}
+.field input,.field select{width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:9px;color:var(--text);}
+.field.err input{border-color:#f87171;} .field .errmsg{display:none;color:#f87171;font-size:.72rem;margin-top:4px;}
+.field.err .errmsg{display:block;}
+.paybox{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;font-size:.85rem;color:var(--muted);margin-bottom:14px;}
+.paybox b{color:var(--ice);}
+.notice{background:rgba(250,204,21,.1);border:1px solid rgba(250,204,21,.3);color:var(--warn);font-size:.78rem;padding:10px 12px;border-radius:9px;margin-bottom:14px;}
+.spinner{width:20px;height:20px;border:3px solid rgba(255,255,255,.2);border-top-color:var(--cyan);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle;margin-right:8px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.checkmark{width:76px;height:76px;border-radius:50%;background:rgba(34,197,94,.15);border:2px solid var(--ok);display:flex;align-items:center;justify-content:center;font-size:2.2rem;color:var(--ok);margin:0 auto 16px;animation:popcheck .5s ease;}
+@keyframes popcheck{0%{transform:scale(0)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+.orderbox .row{display:flex;justify-content:space-between;padding:6px 0;font-size:.82rem;border-bottom:1px dashed var(--border);color:var(--muted);}
+.orderbox .row b{color:var(--text);}
+.errbanner{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.4);color:#f87171;padding:10px 12px;border-radius:9px;font-size:.82rem;margin-bottom:12px;}
+.toastwrap{position:fixed;bottom:16px;right:16px;z-index:200;display:flex;flex-direction:column;gap:8px;}
+.toast{background:var(--navy);border:1px solid var(--border);border-left:3px solid var(--cyan);padding:11px 16px;border-radius:9px;font-size:.82rem;box-shadow:0 8px 24px rgba(0,0,0,.4);animation:slidein .3s ease;}
+@keyframes slidein{from{transform:translateX(30px);opacity:0}to{transform:translateX(0);opacity:1}}
+.histitem{padding:14px;margin-bottom:10px;font-size:.8rem;} .histitem .row{display:flex;justify-content:space-between;padding:3px 0;color:var(--muted);} .histitem .row b{color:var(--text);}
+.histhead{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
+footer{border-top:1px solid var(--border);padding:34px 0 24px;margin-top:30px;}
+.footbottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;font-size:.75rem;color:var(--muted);margin-top:20px;padding-top:16px;border-top:1px solid var(--border);}
+.credit{background:var(--panel);border:1px solid var(--border);padding:6px 12px;border-radius:8px;font-weight:700;color:var(--ice);}
+::-webkit-scrollbar{width:8px;} ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;}
+</style>
+</head>
+<body>
+<div id="particles"></div>
+
+<!--
+  ============================= SECURITY WARNING =============================
+  A Discord webhook placed inside client-side HTML/JS is PUBLICLY VISIBLE to
+  anyone who views page source or inspects network requests. Anyone who finds
+  it can post arbitrary messages to your channel or spam it until Discord
+  disables it. For a real production store, orders should be sent to your own
+  backend server, which then relays the notification to Discord using a
+  webhook URL stored as a server-side environment variable — never in a file
+  that ships to the browser.
+  This file has NO backend. It is a client-only demo. Use CONFIG.DISCORD_WEBHOOK_URL
+  below at your own risk, and never paste your real webhook URL into a page
+  you don't fully control, or share it in a chat log, screenshot, or public repo.
+  =============================================================================
+-->
+<script>
+const CONFIG = {
+  DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/1553661077416452157/GTBUql_g8iRCvNq_0uaWe5kKhONb7uxTKjVHGHE8CM2nPoAm3ek9-P7pr-fxTnzqLU1y"
+};
+</script>
+
+<nav>
+  <div class="navwrap">
+    <div class="brand"><div class="mark">❄</div>FLANTIC MC</div>
+    <div class="navlinks" id="navlinks">
+      <a href="#home" class="nl active">Home</a>
+      <a href="#store" class="nl">Store</a>
+      <a href="#ranks" class="nl">Ranks</a>
+      <a href="#coins" class="nl">Coins</a>
+      <a href="#crates" class="nl">Crates</a>
+      <a href="#support" class="nl">Support</a>
+      <a href="#history" class="nl">History</a>
+    </div>
+    <div class="navright">
+      <button class="carticon" id="cartBtn" aria-label="Cart">🛒<span class="badge" id="badge">0</span></button>
+      <button class="hamburger" id="hamBtn" aria-label="Menu">☰</button>
+    </div>
+  </div>
+  <div class="mobilemenu" id="mobileMenu">
+    <a href="#home" class="nl">Home</a><a href="#store" class="nl">Store</a><a href="#ranks" class="nl">Ranks</a>
+    <a href="#coins" class="nl">Coins</a><a href="#crates" class="nl">Crates</a><a href="#support" class="nl">Support</a><a href="#history" class="nl">History</a>
+  </div>
+</nav>
+
+<div id="home" class="hero">
+  <h1 class="reveal show">FLANTIC MC</h1>
+  <p class="sub reveal show">Competitive Lifesteal Network</p>
+  <div class="statusrow reveal show">
+    <span><span class="dotlive"></span>Server Online</span>
+    <span id="playerCount">👥 Loading players…</span>
+  </div>
+  <div class="herobtns reveal show">
+    <a class="btn btn-primary" href="#store">Browse Store</a>
+    <button class="btn btn-ghost" onclick="copyIP()">Join Server</button>
+  </div>
+  <div class="card ipcard reveal show">
+    <div style="font-size:.7rem;color:var(--muted);letter-spacing:1px;font-weight:700;">SERVER IP</div>
+    <div class="ipval">play.flanticmc.com</div>
+    <button class="btn btn-primary" onclick="copyIP()">COPY IP</button>
+  </div>
+</div>
+
+<section id="store">
+  <div class="container">
+    <div class="sectitle reveal"><h2>THE STORE</h2><p style="color:var(--muted)">Search or filter products below.</p></div>
+    <div class="searchbar reveal">
+      <input id="searchInput" placeholder="Search products..." oninput="renderProducts()">
+      <button class="filterbtn active" data-f="all" onclick="setFilter('all')">All</button>
+      <button class="filterbtn" data-f="rank" onclick="setFilter('rank')">Ranks</button>
+      <button class="filterbtn" data-f="coins" onclick="setFilter('coins')">Coins</button>
+      <button class="filterbtn" data-f="crate" onclick="setFilter('crate')">Crates</button>
+    </div>
+    <div class="grid" id="productGrid"></div>
+  </div>
+</section>
+
+<div class="ctabox reveal">
+  <h2 style="font-size:1.8rem;font-weight:900;">READY TO JOIN THE BATTLE?</h2>
+  <p style="color:var(--muted);margin-top:8px;">Grab your perks and dominate the Lifesteal realm.</p>
+  <div style="margin-top:18px;"><a class="btn btn-primary" href="#store">Shop Now</a></div>
+</div>
+
+<section id="support">
+  <div class="container">
+    <div class="card reveal" style="padding:24px;max-width:600px;margin:0 auto;">
+      <h3 style="margin-bottom:10px;">🛡️ Support</h3>
+      <p style="color:var(--muted);font-size:.88rem;">Need help with an order, a bug report, or an appeal? Join our Discord and open a ticket in #support. This store uses <b style="color:var(--ice)">manual payment verification</b> — a staff member checks each payment before delivering items.</p>
+    </div>
+  </div>
+</section>
+
+<section id="history">
+  <div class="container">
+    <div class="histhead">
+      <h2>ORDER HISTORY (this browser only)</h2>
+      <button class="btn btn-ghost" onclick="clearHistory()">Clear History</button>
+    </div>
+    <p style="color:var(--muted);font-size:.8rem;margin-bottom:16px;">This list is stored only in your browser's localStorage — it is not a real database and is not visible to Flantic MC staff. Staff verify payments from Discord notifications.</p>
+    <div id="historyList"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="brand" style="margin-bottom:8px;"><div class="mark">❄</div>FLANTIC MC</div>
+    <p style="color:var(--muted);font-size:.85rem;">A competitive Minecraft Lifesteal network.</p>
+    <div class="footbottom">
+      <span>© 2026 Flantic MC. All rights reserved.</span>
+      <a class="credit" href="#" onclick="return false;">💠 Made by RHxOP</a>
+    </div>
+  </div>
+</footer>
+
+<div class="overlaybg" id="overlayBg" onclick="closeCart()"></div>
+<div class="drawer" id="cartDrawer">
+  <div class="drawerhead"><h3>Your Cart</h3><button onclick="closeCart()">✕</button></div>
+  <div class="drawerbody" id="cartBody"></div>
+  <div class="drawerfoot">
+    <div class="row"><span>Subtotal</span><span id="cartSubtotal">₹0</span></div>
+    <div class="row total"><span>Total</span><span id="cartTotal">₹0</span></div>
+    <button class="btn btn-primary" style="width:100%;margin-top:10px;" onclick="openCheckout()">Proceed to Checkout</button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="clearCart()">Clear Cart</button>
+  </div>
+</div>
+
+<div class="modal" id="checkoutModal">
+  <div class="modalcard" id="checkoutContent"></div>
+</div>
+
+<div class="toastwrap" id="toastwrap"></div>
+
+<script>
+const PRODUCTS=[
+ {id:'hero',name:'HERO',cat:'rank',ic:'🦸🏻',price:49,desc:'Entry-level perks and a colored name tag.'},
+ {id:'noble',name:'NOBLE',cat:'rank',ic:'📚',price:99,desc:'More kits, more slots, more style.'},
+ {id:'lord',name:'LORD',cat:'rank',ic:'🦚',price:149,desc:'Serious perks for serious players.'},
+ {id:'king',name:'KING',cat:'rank',ic:'👑',price:249,desc:'The top-tier Flantic MC experience.'},
+ {id:'banana',name:'BANANA',cat:'rank',ic:'🍌',price:399,desc:'The exclusive rank.'},
+ {id:'coins50',name:'50 Coins',cat:'coins',ic:'🪙',price:49,desc:'Use in the in-game coin shop.'},
+ {id:'coins100',name:'10 Coins',cat:'coins',ic:'🪙',price:89,desc:'Use in the in-game coin shop.'},
+ {id:'coins250',name:'250 Coins',cat:'coins',ic:'🪙',price:199,desc:'Use in the in-game coin shop.'},
+ {id:'coins500',name:'500 Coins',cat:'coins',ic:'🪙',price:349,desc:'Use in the in-game coin shop.'},
+ {id:'coins750',name:'750 Coins',cat:'coins',ic:'🪙',price:449,desc:'Use in the in-game coin shop.'},
+ {id:'coins1,000',name:'1,000 Coins',cat:'coins',ic:'🪙',price:549,desc:'Use in the in-game coin shop.'},
+ {id:'vote',name:'VOTE Crate',cat:'crate',ic:'🔑',price:0,desc:'Earn free with /vote — not for sale.',free:true},
+ {id:'rare',name:'RARE Crate',cat:'crate',ic:'🔐',price:49,desc:'Rare rewards and valuable items.'},
+ {id:'spawnwe',name:'Spawner Crate',cat:'crate',ic:'🗝️',price:99,desc:'Rare rewards and valuable items.'},
+ {id:'ultimate',name:'Ultimate Crate',cat:'crate',ic:'💠',price:199,desc:'Epic loot and bonus rewards.'}
+];
+let cart=JSON.parse(localStorage.getItem('flantic_cart')||'[]');
+let orders=JSON.parse(localStorage.getItem('flantic_orders')||'[]');
+let filter='all';
+
+for(let i=0;i<18;i++){const d=document.createElement('div');d.className='dot';
+ const s=Math.random()*4+2; d.style.width=s+'px';d.style.height=s+'px';
+ d.style.left=Math.random()*100+'vw'; d.style.bottom='-10px';
+ d.style.animationDuration=(10+Math.random()*10)+'s'; d.style.animationDelay=Math.random()*10+'s';
+ document.getElementById('particles').appendChild(d);}
+setTimeout(()=>{document.getElementById('playerCount').textContent='👥 '+(Math.floor(Math.random()*180)+40)+' players online';},600);
+
+document.getElementById('hamBtn').onclick=()=>document.getElementById('mobileMenu').classList.toggle('open');
+document.querySelectorAll('.nl').forEach(a=>a.addEventListener('click',()=>{
+  document.querySelectorAll('.nl').forEach(x=>x.classList.remove('active'));
+  document.getElementById('mobileMenu').classList.remove('open');
+}));
+
+function toast(msg){const w=document.getElementById('toastwrap');const t=document.createElement('div');
+ t.className='toast';t.textContent=msg;w.appendChild(t);setTimeout(()=>t.remove(),3200);}
+function copyIP(){navigator.clipboard?.writeText('play.flanticmc.com').then(()=>toast('Server IP copied!')).catch(()=>toast('Server IP copied!'));}
+
+const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('show');obs.unobserve(e.target);}}),{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+function setFilter(f){filter=f;document.querySelectorAll('.filterbtn').forEach(b=>b.classList.toggle('active',b.dataset.f===f));renderProducts();}
+function renderProducts(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const grid=document.getElementById('productGrid');
+  const list=PRODUCTS.filter(p=>(filter==='all'||p.cat===filter)&&p.name.toLowerCase().includes(q));
+  grid.innerHTML=list.map(p=>`<div class="card prod reveal show">
+    <div class="ic">${p.ic}</div><h3>${p.name}</h3><p class="desc">${p.desc}</p>
+    <div class="price">${p.free?'Free (in-game)':'₹'+p.price}</div>
+    <button class="btn btn-primary" ${p.free?'disabled style="opacity:.5;cursor:not-allowed;"':''} onclick="addToCart('${p.id}')">${p.free?'Not purchasable':'Add to Cart'}</button>
+  </div>`).join('') || '<p style="color:var(--muted);grid-column:1/-1;text-align:center;">No products match your search.</p>';
+}
+renderProducts();
+
+function saveCart(){localStorage.setItem('flantic_cart',JSON.stringify(cart));renderBadge();renderCart();}
+function renderBadge(){const n=cart.reduce((a,i)=>a+i.qty,0);const b=document.getElementById('badge');b.textContent=n;b.classList.remove('pulse');void b.offsetWidth;b.classList.add('pulse');}
+function addToCart(id){
+  const p=PRODUCTS.find(x=>x.id===id); if(!p||p.free)return;
+  const ex=cart.find(i=>i.id===id); if(ex)ex.qty++; else cart.push({id:p.id,name:p.name,price:p.price,qty:1});
+  saveCart(); toast('Added '+p.name+' to cart!'); openCart();
+}
+function changeQty(id,d){const it=cart.find(i=>i.id===id); if(!it)return; it.qty+=d; if(it.qty<=0)cart=cart.filter(i=>i.id!==id); saveCart();}
+function removeItem(id){cart=cart.filter(i=>i.id!==id); saveCart(); toast('Removed from cart');}
+function clearCart(){cart=[]; saveCart(); toast('Cart cleared');}
+function cartTotal(){return cart.reduce((a,i)=>a+i.price*i.qty,0);}
+function openCart(){document.getElementById('cartDrawer').classList.add('open');document.getElementById('overlayBg').classList.add('open');}
+function closeCart(){document.getElementById('cartDrawer').classList.remove('open');document.getElementById('overlayBg').classList.remove('open');}
+document.getElementById('cartBtn').onclick=openCart;
+function renderCart(){
+  const body=document.getElementById('cartBody');
+  if(cart.length===0){body.innerHTML='<div class="emptycart">🛒<p style="margin-top:10px;">Your cart is empty.</p></div>';}
+  else{body.innerHTML=cart.map(i=>`<div class="cartitem">
+    <div class="info"><h4>${i.name}</h4><span>₹${i.price} each</span></div>
+    <div class="qtybox"><button onclick="changeQty('${i.id}',-1)">−</button><span>${i.qty}</span><button onclick="changeQty('${i.id}',1)">+</button></div>
+    <button class="removebtn" onclick="removeItem('${i.id}')">✕</button></div>`).join('');}
+  document.getElementById('cartSubtotal').textContent='₹'+cartTotal();
+  document.getElementById('cartTotal').textContent='₹'+cartTotal();
+}
+renderCart(); renderBadge();
+
+function genOrderId(){return 'FLA-'+Math.floor(100000+Math.random()*900000);}
+function openCheckout(){
+  if(cart.length===0){toast('Your cart is empty'); return;}
+  closeCart();
+  renderCheckoutForm();
+  document.getElementById('checkoutModal').classList.add('open');
+}
+function closeCheckout(){document.getElementById('checkoutModal').classList.remove('open');}
+function renderCheckoutForm(vals={},errBanner=''){
+  const total=cartTotal();
+  document.getElementById('checkoutContent').innerHTML=`
+   <h3 style="margin-bottom:16px;">Checkout</h3>
+   ${errBanner?`<div class="errbanner">${errBanner}</div>`:''}
+   <div class="field" id="f-ign"><label>Minecraft Username</label><input id="ck_ign" value="${vals.ign||''}"><div class="errmsg">Required.</div></div>
+   <div class="field" id="f-email"><label>Email</label><input id="ck_email" type="email" value="${vals.email||''}"><div class="errmsg">Enter a valid email.</div></div>
+   <div class="field" id="f-discord"><label>Discord Username</label><input id="ck_discord" value="${vals.discord||''}"><div class="errmsg">Required.</div></div>
+   <div class="paybox">
+     <b>Manual payment:</b> Pay ₹${total} to our configured PhonePe / Google Pay ID (shown by staff / in #support), then submit this order.<br><br>
+     ${cart.map(i=>`${i.name} × ${i.qty} — ₹${i.price*i.qty}`).join('<br>')}
+     <div style="margin-top:10px;font-weight:800;color:var(--ice);">Total: ₹${total}</div>
+   </div>
+   <div class="notice">Payment verification is manual. Your order will be checked by the Flantic MC staff before the purchased items are delivered.</div>
+   <div id="submitArea">
+     <button class="btn btn-primary" style="width:100%;" onclick="placeOrder()">Place Order</button>
+     <button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="closeCheckout()">Cancel</button>
+   </div>`;
+}
+async function placeOrder(){
+  const ign=document.getElementById('ck_ign').value.trim();
+  const email=document.getElementById('ck_email').value.trim();
+  const discord=document.getElementById('ck_discord').value.trim();
+  let ok=true;
+  document.getElementById('f-ign').classList.toggle('err',!ign); if(!ign)ok=false;
+  const emailOk=/^\S+@\S+\.\S+$/.test(email);
+  document.getElementById('f-email').classList.toggle('err',!emailOk); if(!emailOk)ok=false;
+  document.getElementById('f-discord').classList.toggle('err',!discord); if(!discord)ok=false;
+  if(!ok){toast('Please fill in all required fields correctly.'); return;}
+
+  const order={
+    id:genOrderId(), ign, email, discord,
+    items:cart.map(i=>({name:i.name,qty:i.qty,price:i.price})),
+    total:cartTotal(),
+    date:new Date().toLocaleDateString(), time:new Date().toLocaleTimeString(),
+    status:'Pending Manual Verification', discordDelivered:false
+  };
+
+  document.getElementById('submitArea').innerHTML=`<div style="text-align:center;padding:10px;"><span class="spinner"></span>Sending order notification…</div>`;
+
+  const result=await sendDiscordWebhook(order);
+  order.discordDelivered=result.ok;
+
+  orders.push(order); localStorage.setItem('flantic_orders',JSON.stringify(orders));
+
+  if(!result.ok){
+    document.getElementById('checkoutContent').innerHTML=`
+     <h3 style="margin-bottom:12px;color:#f87171;">Notification failed</h3>
+     <div class="errbanner">${result.error}</div>
+     <p style="color:var(--muted);font-size:.85rem;margin-bottom:14px;">Your order (ID <b style="color:var(--ice)">${order.id}</b>) was saved on this device, but we couldn't notify Flantic MC staff automatically. Please retry, or share your Order ID in #support.</p>
+     <button class="btn btn-primary" style="width:100%;" onclick="retryOrder('${order.id}')">Retry Notification</button>
+     <button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="closeCheckout();renderHistory();">Close</button>`;
+    console.error('Discord webhook failed:', result.error);
+    return;
+  }
+
+  cart=[]; saveCart();
+  document.getElementById('checkoutContent').innerHTML=`
+   <div style="text-align:center;">
+     <div class="checkmark">✓</div>
+     <h3>Order submitted successfully!</h3>
+     <p style="color:var(--muted);font-size:.85rem;margin:8px 0 16px;">Payment pending manual verification</p>
+   </div>
+   <div class="card orderbox" style="padding:16px;">
+     <div class="row"><span>Order ID</span><b>${order.id}</b></div>
+     <div class="row"><span>Products</span><b>${order.items.map(i=>i.name+' × '+i.qty).join(', ')}</b></div>
+     <div class="row"><span>Total</span><b>₹${order.total}</b></div>
+     <div class="row"><span>Status</span><b style="color:var(--warn)">Pending Manual Verification</b></div>
+   </div>
+   <button class="btn btn-primary" style="width:100%;margin-top:16px;" onclick="closeCheckout();renderHistory();">Done</button>`;
+  renderHistory();
+}
+async function retryOrder(id){
+  const order=orders.find(o=>o.id===id); if(!order)return;
+  document.getElementById('checkoutContent').innerHTML=`<div style="text-align:center;padding:20px;"><span class="spinner"></span>Retrying…</div>`;
+  const result=await sendDiscordWebhook(order);
+  order.discordDelivered=result.ok;
+  localStorage.setItem('flantic_orders',JSON.stringify(orders));
+  if(result.ok){ toast('Notification sent!'); closeCheckout(); renderHistory(); }
+  else{ renderCheckoutForm({}, result.error); document.getElementById('submitArea').innerHTML=`<button class="btn btn-primary" style="width:100%;" onclick="retryOrder('${id}')">Retry Notification</button><button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="closeCheckout();renderHistory();">Close</button>`; }
+}
+
+async function sendDiscordWebhook(order){
+  if(!CONFIG.DISCORD_WEBHOOK_URL || CONFIG.DISCORD_WEBHOOK_URL==='PASTE_YOUR_NEW_WEBHOOK_HERE'){
+    return {ok:false, error:'No Discord webhook URL configured. Edit CONFIG.DISCORD_WEBHOOK_URL in the code.'};
+  }
+  const embed={
+    title:'🛒 NEW FLANTIC MC ORDER',
+    color:0x38bdf8,
+    fields:[
+      {name:'Order ID', value:'#'+order.id, inline:true},
+      {name:'Minecraft Username', value:order.ign, inline:true},
+      {name:'Discord', value:order.discord, inline:true},
+      {name:'Email', value:order.email},
+      {name:'Products', value:order.items.map(i=>i.name+' × '+i.qty).join('\n')},
+      {name:'Total', value:'₹'+order.total, inline:true},
+      {name:'Payment Status', value:'🟡 Pending Manual Verification'}
+    ],
+    footer:{text:'Flantic MC Webstore'},
+    timestamp:new Date().toISOString()
+  };
+  try{
+    const res=await fetch(CONFIG.DISCORD_WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({embeds:[embed]})});
+    if(!res.ok) return {ok:false, error:'Discord responded with status '+res.status};
+    return {ok:true};
+  }catch(e){ return {ok:false, error:'Network error contacting Discord: '+e.message}; }
+}
+
+function renderHistory(){
+  const el=document.getElementById('historyList');
+  if(orders.length===0){el.innerHTML='<p style="color:var(--muted);">No orders yet.</p>'; return;}
+  el.innerHTML=orders.slice().reverse().map(o=>`<div class="card histitem">
+    <div class="row"><span>Order ID</span><b>${o.id}</b></div>
+    <div class="row"><span>IGN / Discord</span><b>${o.ign} / ${o.discord}</b></div>
+    <div class="row"><span>Email</span><b>${o.email}</b></div>
+    <div class="row"><span>Products</span><b>${o.items.map(i=>i.name+' × '+i.qty).join(', ')}</b></div>
+    <div class="row"><span>Total</span><b>₹${o.total}</b></div>
+    <div class="row"><span>Date / Time</span><b>${o.date} ${o.time}</b></div>
+    <div class="row"><span>Status</span><b style="color:var(--warn)">${o.status}</b></div>
+    <div class="row"><span>Discord Notified</span><b style="color:${o.discordDelivered?'var(--ok)':'#f87171'}">${o.discordDelivered?'Yes':'No'}</b></div>
+    <button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="deleteOrder('${o.id}')">Delete</button>
+  </div>`).join('');
+}
+function deleteOrder(id){orders=orders.filter(o=>o.id!==id); localStorage.setItem('flantic_orders',JSON.stringify(orders)); renderHistory(); toast('Order deleted');}
+function clearHistory(){orders=[]; localStorage.setItem('flantic_orders','[]'); renderHistory(); toast('History cleared');}
+renderHistory();
+</script>
+</body>
+</html>
